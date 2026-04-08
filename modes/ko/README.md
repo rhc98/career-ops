@@ -117,6 +117,18 @@ language:
 - **채용 포털**: Wanted, 잡코리아, 사람인, 점핏, 로켓펀치
 - **기업 유형**: 대기업/중견기업/스타트업/외국계의 서로 다른 평가 기준
 
+## 한글 폰트 설정 (PDF 생성 시)
+
+CV 템플릿은 `Noto Sans KR` 시스템 폰트로 한글을 렌더링합니다. 대부분의 OS에서 자동으로 작동합니다:
+
+- **macOS**: Apple SD Gothic Neo (기본 설치)
+- **Windows**: Malgun Gothic (맑은 고딕, 기본 설치)
+- **Linux**: `sudo apt install fonts-noto-cjk` 또는 `sudo dnf install google-noto-sans-cjk-kr-fonts`
+
+PDF에서 한글이 깨지면(토푸 현상) 위 폰트를 설치하세요.
+
+**셀프 호스팅 (선택):** 시스템 폰트 없이도 작동하게 하려면 Noto Sans KR woff2 파일을 `fonts/` 디렉토리에 추가하고, `templates/cv-template.html`의 `@font-face`에서 `src: local(...)` 대신 `src: url('./fonts/noto-sans-kr-regular.woff2')` 형식으로 변경하세요. [Google Fonts](https://fonts.google.com/noto/specimen/Noto+Sans+KR)에서 다운로드 가능합니다.
+
 ## 기여하기
 
 번역을 개선하거나 모드를 추가하고 싶다면:
