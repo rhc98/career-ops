@@ -183,6 +183,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 
 - **German (DACH market):** `modes/de/` — native German translations with DACH-specific vocabulary (13. Monatsgehalt, Probezeit, Kündigungsfrist, AGG, Tarifvertrag, etc.). Includes `_shared.md`, `angebot.md` (evaluation), `bewerben.md` (apply), `pipeline.md`.
 - **French (Francophone market):** `modes/fr/` — native French translations with France/Belgium/Switzerland/Luxembourg-specific vocabulary (CDI/CDD, convention collective SYNTEC, RTT, mutuelle, prévoyance, 13e mois, intéressement/participation, titres-restaurant, CSE, portage salarial, etc.). Includes `_shared.md`, `offre.md` (evaluation), `postuler.md` (apply), `pipeline.md`.
+- **Korean (한국 시장):** `modes/ko/` — native Korean translations with Korea-specific vocabulary (4대보험, 퇴직금, 연봉 구조, 주 52시간, 수습 기간, 스톡옵션, 자기소개서, etc.). Full 14-mode translation including `_shared.md`, `채용공고.md` (evaluation), `지원.md` (apply + 자기소개서 generation), `파이프라인.md`, `자동파이프라인.md`, `비교.md`, `연락.md`, `기업조사.md`, `이력서.md`, `스캔.md`, `배치.md`, `트래커.md`, `교육.md`, `프로젝트.md`.
 
 **When to use German modes:** If the user is targeting German-language job postings, lives in DACH, or asks for German output. Either:
 1. User says "use German modes" → read from `modes/de/` instead of `modes/`
@@ -194,7 +195,12 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 2. User sets `language.modes_dir: modes/fr` in `config/profile.yml` → always use French modes
 3. You detect a French JD → suggest switching to French modes
 
-**When NOT to:** If the user applies to English-language roles, even at French or German companies, use the default English modes.
+**When to use Korean modes:** If the user is targeting Korean-language job postings, lives in Korea, or asks for Korean output. Either:
+1. User says "use Korean modes" or "한국어 모드 사용해줘" → read from `modes/ko/` instead of `modes/`
+2. User sets `language.modes_dir: modes/ko` in `config/profile.yml` → always use Korean modes
+3. You detect a Korean JD → suggest switching to Korean modes
+
+**When NOT to:** If the user applies to English-language roles, even at French, German, or Korean companies, use the default English modes.
 
 ### Skill Modes
 
