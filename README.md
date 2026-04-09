@@ -20,9 +20,9 @@
 
 Career-Ops는 Claude Code를 취업 검색 통합 관제 시스템으로 만들어줍니다. 스프레드시트에 수동으로 지원 현황을 관리하는 대신, AI 기반 파이프라인이 모든 것을 처리합니다:
 
-- **채용공고 평가** -- A-F 구조화된 스코어링 시스템 (10개 가중치 기반)
-- **맞춤형 PDF 생성** -- 공고별 ATS 최적화 이력서 자동 생성
-- **포털 자동 스캔** -- Greenhouse, Ashby, Lever, 회사 채용 페이지 자동 탐색
+- **채용공고 평가** -- A-F 구조화된 스코어링 시스템 (10개 가중치 기반, 4대보험/퇴직금/연봉 구조 등 한국 시장 요소 반영)
+- **맞춤형 PDF 생성** -- 공고별 ATS 최적화 이력서 + 자기소개서 자동 생성
+- **포털 자동 스캔** -- Wanted, 잡코리아, 사람인, 점핏, 로켓펀치 + Greenhouse, Ashby, Lever 자동 탐색
 - **배치 처리** -- 서브 에이전트를 활용해 10개 이상 공고를 병렬 평가
 - **통합 추적** -- 단일 소스 오브 트루스 + 무결성 검사
 
@@ -40,10 +40,12 @@ Career-ops는 에이전틱합니다: Claude Code가 Playwright로 채용 페이�
 |------|------|
 | **자동 파이프라인** | URL 붙여넣기 한 번으로 평가 + PDF + 트래커 엔트리 완성 |
 | **6블록 평가** | 역할 요약, 이력서 매칭, 레벨 전략, 보상 리서치, 개인화, 면접 준비 (STAR+R) |
+| **한국 시장 특화 평가** | 4대보험, 퇴직금, 연봉 구조(기본급/성과급), 수습 기간, 주 52시간, 기업 유형(대기업/스타트업/외국계) 자동 분석 |
+| **자기소개서 생성** | 한국 채용시장 고유의 자기소개서(성장과정/지원동기/입사후포부) 자동 작성 |
 | **면접 스토리 뱅크** | 평가할 때마다 STAR+Reflection 스토리를 축적 -- 5~10개 마스터 스토리로 모든 행동 면접 질문에 대응 |
-| **협상 스크립트** | 연봉 협상 프레임워크, 지역 할인 반박, 경쟁 오퍼 레버리지 |
-| **ATS PDF 생성** | Space Grotesk + DM Sans 디자인의 키워드 주입 이력서 |
-| **포털 스캐너** | 45개 이상 기업 사전 설정 (Anthropic, OpenAI, ElevenLabs, Retool, n8n...) + Ashby, Greenhouse, Lever, Wellfound 커스텀 쿼리 |
+| **협상 스크립트** | 연봉 협상 프레임워크, 경쟁 오퍼 레버리지, 한국 시장 보상 구조 분석 |
+| **ATS PDF 생성** | 한글 폰트(Noto Sans KR) 지원, 키워드 주입 이력서 |
+| **포털 스캐너** | Wanted, 잡코리아, 사람인, 점핏, 로켓펀치 + Greenhouse, Ashby, Lever, Wellfound 등 45개 이상 기업 사전 설정 |
 | **배치 처리** | `claude -p` 워커로 병렬 평가 |
 | **대시보드 TUI** | 터미널 UI로 파이프라인 탐색, 필터링, 정렬 |
 | **휴먼-인-더-루프** | AI가 평가하고 추천하면, 당신이 결정하고 행동. 시스템이 지원서를 제출하지 않습니다 -- 최종 결정은 항상 당신 |
@@ -64,19 +66,24 @@ npm run doctor                     # 모든 전제조건 검증
 cp config/profile.example.yml config/profile.yml  # 본인 정보로 수정
 cp templates/portals.example.yml portals.yml       # 기업 목록 커스터마이즈
 
-# 4. 이력서 추가
+# 4. 한국어 모드 활성화
+# config/profile.yml에 다음을 추가:
+#   language:
+#     primary: ko
+#     modes_dir: modes/ko
+
+# 5. 이력서 추가
 # 프로젝트 루트에 cv.md를 만들고 마크다운으로 이력서 작성
 
-# 5. Claude와 함께 개인화
+# 6. Claude와 함께 개인화
 claude   # 이 디렉토리에서 Claude Code 실행
 
 # Claude에게 시스템을 맞춤 설정하도록 요청:
 # "아키타입을 백엔드 엔지니어링 역할로 변경해줘"
-# "모드를 한국어로 설정해줘"
-# "portals.yml에 이 기업들 추가해줘"
+# "한국 기업 위주로 포털 설정해줘"
 # "이 이력서로 프로필 업데이트해줘"
 
-# 6. 사용 시작
+# 7. 사용 시작
 # 채용공고 URL을 붙여넣거나 /career-ops 실행
 ```
 
@@ -86,24 +93,26 @@ claude   # 이 디렉토리에서 Claude Code 실행
 
 ## 사용법
 
-Career-ops는 하나의 슬래시 커맨드에 여러 모드로 작동합니다:
+Career-ops는 하나의 슬래시 커맨드에 여러 모드로 작동합니다. 한국어 모드를 활성화하면 한국어 모드 파일(`modes/ko/`)이 사용됩니다:
 
 ```
 /career-ops                → 사용 가능한 모든 명령어 표시
 /career-ops {JD 붙여넣기}   → 전체 자동 파이프라인 (평가 + PDF + 트래커)
-/career-ops scan           → 포털 스캔
-/career-ops pdf            → ATS 최적화 이력서 생성
+/career-ops scan           → 한국 포털 + 글로벌 포털 스캔
+/career-ops pdf            → ATS 최적화 이력서 생성 (한글 폰트 지원)
 /career-ops batch          → 배치 평가
 /career-ops tracker        → 지원 현황 조회
-/career-ops apply          → AI로 지원서 작성
+/career-ops apply          → 지원서 작성 + 자기소개서 자동 생성
 /career-ops pipeline       → 대기 URL 처리
-/career-ops contacto       → LinkedIn 아웃리치 메시지
+/career-ops contacto       → LinkedIn 아웃리치 메시지 (한/영)
 /career-ops deep           → 기업 심층 리서치
 /career-ops training       → 교육/자격증 평가
 /career-ops project        → 포트폴리오 프로젝트 평가
 ```
 
-채용공고 URL이나 설명을 직접 붙여넣어도 됩니다 -- career-ops가 자동으로 감지하고 전체 파이프라인을 실행합니다.
+채용공고 URL이나 설명을 직접 붙여넣어도 됩니다 -- career-ops가 자동으로 감지하고 (한/영 자동 인식) 전체 파이프라인을 실행합니다.
+
+> **팁:** Wanted, 잡코리아, 사람인 등 한국 포털의 URL을 그대로 붙여넣으면 됩니다. Playwright가 페이지를 직접 렌더링해서 정확한 정보를 추출합니다.
 
 ## 작동 방식
 
@@ -131,6 +140,19 @@ Career-ops는 하나의 슬래시 커맨드에 여러 모드로 작동합니다:
 
 스캐너에는 **45개 이상의 기업**이 사전 설정되어 있고, 주요 채용 포털에서 **19개 검색 쿼리**가 준비되어 있습니다. `templates/portals.example.yml`을 `portals.yml`로 복사하고 원하는 기업을 추가하세요:
 
+### 한국 채용 포털
+
+| 포털 | URL | 특징 |
+|------|-----|------|
+| **Wanted** | wanted.co.kr | 테크/스타트업 중심, 합격 보상금 |
+| **잡코리아** | jobkorea.co.kr | 종합 채용 포털, 대기업/중견기업 강세 |
+| **사람인** | saramin.co.kr | 종합 채용 포털, 연봉 리뷰 |
+| **점핏** | jumpit.saramin.co.kr | 개발자 전문 포털 |
+| **로켓펀치** | rocketpunch.com | 스타트업 중심 |
+| **LinkedIn Korea** | linkedin.com | 외국계/글로벌 포지션 |
+
+### 글로벌 기업 (직접 스캔)
+
 **AI Labs:** Anthropic, OpenAI, Mistral, Cohere, LangChain, Pinecone
 **Voice AI:** ElevenLabs, PolyAI, Parloa, Hume AI, Deepgram, Vapi, Bland AI
 **AI 플랫폼:** Retool, Airtable, Vercel, Temporal, Glean, Arize AI
@@ -138,9 +160,58 @@ Career-ops는 하나의 슬래시 커맨드에 여러 모드로 작동합니다:
 **엔터프라이즈:** Salesforce, Twilio, Gong, Dialpad
 **LLMOps:** Langfuse, Weights & Biases, Lindy, Cognigy, Speechmatics
 **자동화:** n8n, Zapier, Make.com
-**유럽:** Factorial, Attio, Tinybird, Clarity AI, Travelperk
 
-**채용 포털:** Ashby, Greenhouse, Lever, Wellfound, Workable, RemoteFront
+**글로벌 채용 플랫폼:** Ashby, Greenhouse, Lever, Wellfound, Workable, RemoteFront
+
+> 한국 기업을 추가하려면 `portals.yml`의 `tracked_companies`에 채용 페이지 URL을 넣으면 됩니다. Claude에게 "네이버, 카카오, 토스 추가해줘"라고 말해도 됩니다.
+
+## 한국 시장 특화 평가
+
+career-ops는 글로벌 시장에는 없는 한국 채용시장 고유 항목들을 평가에 반영합니다:
+
+### 보상 패키지 분석
+
+| 항목 | 설명 | 평가 영향 |
+|------|------|-----------|
+| **4대보험** | 국민연금 / 건강보험 / 고용보험 / 산재보험 | 정규직 기본. 미포함 시 강한 레드플래그 |
+| **퇴직금** | 1년 이상 근무 시 30일분 평균임금 (DC/DB) | 법정 의무. 별도 퇴직연금 여부 확인 |
+| **연봉 구조** | 기본급 + 성과급 + 인센티브 | 기본급 비중 확인. 성과급 비중 과도 시 리스크 |
+| **수습 기간** | 보통 3개월, 급여 최소 90% | 3개월 초과 시 확인 필요 |
+| **스톡옵션** | 스타트업에서 흔함 | 행사가, 베스팅 스케줄, 기업가치 평가 |
+| **연차** | 법정 15일 (1년차) ~ 25일 | 15일 미만 = 위법, 20일+ = 좋음 |
+| **식대/교통비** | 비과세 식대 한도 20만원 | 실질 수입에 영향 |
+| **자기개발비** | 교육/자격증/컨퍼런스 지원금 | 성장 의지 시그널 |
+| **주 52시간** | 법정 근로시간 상한 | 준수 여부 = 워라밸 핵심 시그널 |
+
+### 기업 유형별 평가 기준
+
+| 유형 | 예시 | 평가 포인트 |
+|------|------|-------------|
+| **대기업** | 삼성, LG, SK, 현대, 네이버, 카카오 | 직급 체계, 승진 속도, 야근 문화, 안정성 |
+| **유니콘/대형 스타트업** | 토스, 우아한형제들, 당근, 컬리 | 성장성, 옵션 가치, 팀 문화 |
+| **시리즈 A-C 스타트업** | 초기 단계 | 투자 단계, 번아웃 리스크, 스톡옵션 가치 |
+| **외국계 한국 지사** | Google Korea, AWS Korea 등 | 본사 vs 지사 의사결정 권한, 영어 사용 비중 |
+| **공공기관/공기업** | 한전, KOICA 등 | 연봉 테이블, 워라밸, 성장 한계 |
+
+### 연봉 리서치 소스
+
+평가 시 다음 한국 시장 데이터를 자동으로 활용합니다:
+
+- **Wanted, 잡코리아, 사람인** -- 직군별 연봉 데이터
+- **Blind Korea** (teamblind.com) -- 내부자 연봉/문화 리뷰
+- **크레딧잡** (creditjob.co.kr) -- 4대보험 기반 실제 평균 연봉
+- **잡플래닛** (jobplanet.co.kr) -- 기업 리뷰
+
+### 자기소개서 자동 생성
+
+`/career-ops apply` (또는 `/career-ops 지원`)를 실행하면 한국 채용시장 고유의 자기소개서를 자동 생성합니다:
+
+- **성장과정** -- 가치관 형성과 핵심 경험
+- **지원동기** -- 회사/직무 매칭 + 기여 가능성
+- **입사후포부** -- 단기/장기 목표와 회사 비전 연결
+- **경력기술서** -- 경력 채용용 정량 성과 중심
+
+이력서, 평가 리포트, 회사 컨텍스트를 모두 활용해서 회사별로 맞춤 작성합니다.
 
 ## 대시보드 TUI
 
@@ -162,16 +233,20 @@ career-ops/
 ├── cv.md                        # 이력서 (직접 생성)
 ├── article-digest.md            # 핵심 성과/증거 (선택)
 ├── config/
-│   └── profile.example.yml      # 프로필 템플릿
+│   └── profile.example.yml      # 프로필 템플릿 (language.modes_dir로 ko 활성화)
 ├── modes/                       # 14개 스킬 모드
-│   ├── _shared.md               # 공유 컨텍스트 (커스터마이즈 대상)
+│   ├── _shared.md               # 공유 컨텍스트 (영문 기본)
 │   ├── oferta.md                # 단일 평가
-│   ├── pdf.md                   # PDF 생성
-│   ├── scan.md                  # 포털 스캐너
-│   ├── batch.md                 # 배치 처리
+│   ├── ko/                      # 한국어 모드 (한국 시장 특화)
+│   │   ├── _shared.md           # 한국 시장 컨텍스트 (4대보험, 기업 유형 등)
+│   │   ├── 채용공고.md           # 채용공고 평가
+│   │   ├── 지원.md               # 지원서 + 자기소개서 작성
+│   │   ├── 이력서.md             # PDF 이력서 생성
+│   │   ├── 스캔.md               # 한국 포털 스캐너
+│   │   └── ...                  # 14개 모드 전체 한국어판
 │   └── ...
 ├── templates/
-│   ├── cv-template.html         # ATS 최적화 이력서 템플릿
+│   ├── cv-template.html         # ATS 최적화 이력서 템플릿 (Noto Sans KR 지원)
 │   ├── portals.example.yml      # 스캐너 설정 템플릿
 │   └── states.yml               # 정규 상태값
 ├── batch/
@@ -181,10 +256,12 @@ career-ops/
 ├── data/                        # 추적 데이터 (gitignored)
 ├── reports/                     # 평가 리포트 (gitignored)
 ├── output/                      # 생성된 PDF (gitignored)
-├── fonts/                       # Space Grotesk + DM Sans
+├── fonts/                       # Space Grotesk + DM Sans (+ Noto Sans KR 옵션)
 ├── docs/                        # 설정, 커스터마이즈, 아키텍처 문서
 └── examples/                    # 샘플 이력서, 리포트, 증거 자료
 ```
+
+> **한국어 모드에 대해 더 알고 싶다면** [`modes/ko/README.md`](modes/ko/README.md)를 참고하세요. 한국어 용어 사전, 한글 폰트 설정, 시장 특화 요소가 모두 정리되어 있습니다.
 
 ## 기술 스택
 
@@ -228,6 +305,17 @@ Santiago입니다 -- Head of Applied AI, 전 창업자 (직접 만들고 매각�
 - [SETUP.md](docs/SETUP.md) -- 설치 가이드
 - [CUSTOMIZATION.md](docs/CUSTOMIZATION.md) -- 커스터마이즈 방법
 - [ARCHITECTURE.md](docs/ARCHITECTURE.md) -- 시스템 아키텍처
+- [modes/ko/README.md](modes/ko/README.md) -- 한국어 모드 사용법, 용어 사전, 시장 특화 가이드
+
+## 한글 폰트 (PDF 생성)
+
+CV 템플릿은 시스템에 설치된 한글 폰트를 자동으로 사용합니다:
+
+- **macOS**: Apple SD Gothic Neo (기본 설치)
+- **Windows**: 맑은 고딕 (기본 설치)
+- **Linux**: `sudo apt install fonts-noto-cjk` 또는 `sudo dnf install google-noto-sans-cjk-kr-fonts`
+
+PDF에서 한글이 깨지면(토푸 현상) 위 폰트를 설치하세요. 자세한 셀프 호스팅 설정은 [`modes/ko/README.md`](modes/ko/README.md)를 참고하세요.
 
 ## 라이선스
 
