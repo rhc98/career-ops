@@ -79,15 +79,28 @@ function normalizeStatus(raw) {
   const canonical = [
     'Evaluada', 'Aplicado', 'Respondido', 'Entrevista',
     'Oferta', 'Rechazado', 'Descartado', 'NO APLICAR',
+    // states.yml canonical labels
+    'Evaluated', 'Applied', 'Responded', 'Interview',
+    'Offer', 'Rejected', 'Discarded', 'SKIP',
   ];
   for (const c of canonical) {
     if (lower === c.toLowerCase()) return { status: c };
   }
 
-  // Aliases from states.yml
+  // Aliases from states.yml (Spanish)
   if (['enviada', 'aplicada', 'applied', 'sent'].includes(lower)) return { status: 'Aplicado' };
   if (['cerrada', 'descartada'].includes(lower)) return { status: 'Descartado' };
   if (['no aplicar', 'no_aplicar', 'skip'].includes(lower)) return { status: 'NO APLICAR' };
+
+  // Aliases from states.yml (Korean)
+  if (['평가됨', '평가완료'].includes(s)) return { status: 'Evaluated' };
+  if (['지원함', '지원완료'].includes(s)) return { status: 'Applied' };
+  if (['응답', '회신'].includes(s)) return { status: 'Responded' };
+  if (['면접', '면접중'].includes(s)) return { status: 'Interview' };
+  if (['합격', '오퍼'].includes(s)) return { status: 'Offer' };
+  if (['불합격', '탈락'].includes(s)) return { status: 'Rejected' };
+  if (['제외', '마감'].includes(s)) return { status: 'Discarded' };
+  if (['스킵', '패스'].includes(s)) return { status: 'SKIP' };
 
   // Unknown — flag it
   return { status: null, unknown: true };

@@ -37,6 +37,23 @@
     font-display: swap;
     unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
+  /* Korean (Hangul) font support — system font stack fallback */
+  @font-face {
+    font-family: 'Noto Sans KR';
+    src: local('Noto Sans KR'), local('NotoSansKR-Regular'), local('Apple SD Gothic Neo'), local('Malgun Gothic');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+AC00-D7AF, U+3130-318F, U+1100-11FF, U+3000-303F, U+FF00-FFEF;
+  }
+  @font-face {
+    font-family: 'Noto Sans KR';
+    src: local('Noto Sans KR Bold'), local('NotoSansKR-Bold'), local('Apple SD Gothic Neo Bold'), local('Malgun Gothic Bold');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+AC00-D7AF, U+3130-318F, U+1100-11FF, U+3000-303F, U+FF00-FFEF;
+  }
 
   * {
     margin: 0;
@@ -50,7 +67,7 @@
   }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
     font-size: 11px;
     line-height: 1.5;
     color: #1a1a2e;
@@ -91,7 +108,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px 16px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
     font-size: 10px;
     color: #555;
   }
@@ -142,7 +159,7 @@
   }
 
   .competency-tag {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
     font-size: 10px;
     font-weight: 500;
     color: hsl(187, 74%, 28%);
